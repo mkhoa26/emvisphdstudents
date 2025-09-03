@@ -1,0 +1,867 @@
+{
+  "nodes":[
+    {
+        "product_code": "Syam Mohan",
+        "global_export": "59.50382306",
+        "sector": "Chemicals",
+        "main_supervisor": "Pari Delir Haghighi",
+        "product_name": "Syam.Mohan@monash.edu",
+        "rca": "0",
+        "colour": "#C57BD9",
+        "d_colour": "#708090",
+        "complexity": "0.4895705",
+        "opp_gain": "0.085643824",
+        "export_value": "1"
+    },
+    {
+        "product_code": "Tri Cahyo Edi",
+        "global_export": "461.6636266",
+        "sector": "Chemicals",
+        "main_supervisor": "Tim Dwyer",
+        "product_name": "tri.edi@monash.edu",
+        "rca": "1",
+        "colour": "#C57BD9",
+        "d_colour": "#BB968A",
+        "complexity": "0.95747726",
+        "opp_gain": "0.215746476",
+        "export_value": "1"
+    },
+    {
+        "product_code": "Merry Kim Hoang",
+        "global_export": "244.9057518",
+        "sector": "Chemicals",
+        "main_supervisor": "Sarah Goodwin",
+        "product_name": "Merry.Hoang@monash.edu",
+        "rca": "0",
+        "colour": "#C57BD9",
+        "d_colour": "#00A6AA",
+        "complexity": "0.614095211",
+        "opp_gain": "0.151183175",
+        "export_value": "2"
+    },
+    {
+        "product_code": "Mike Yeates",
+        "global_export": "44.48057762",
+        "sector": "Chemicals",
+        "main_supervisor": "Tom Chandler",
+        "product_name": "mike.yeates@monash.edu",
+        "rca": "1",
+        "colour": "#C57BD9",
+        "d_colour": "#C57BD9",
+        "complexity": "-0.129830447",
+        "opp_gain": "-0.068250254",
+        "export_value": "2"
+    },
+    {
+        "product_code": "Michael Neylan",
+        "global_export": "88.66293214",
+        "sector": "Chemicals",
+        "main_supervisor": "Tom Chandler",
+        "product_name": "michael.neylan@monash.edu",
+        "rca": "1",
+        "colour": "#C57BD9",
+        "d_colour": "#C57BD9",
+        "complexity": "0.473784339",
+        "opp_gain": "0.052054816",
+        "export_value": "2"
+    },
+    {
+        "product_code": "Adrian Kristanto",
+        "global_export": "48.23471556",
+        "sector": "Chemicals",
+        "main_supervisor": "Tim Dwyer",
+        "product_name": "adrian.kristanto@monash.edu",
+        "rca": "1",
+        "colour": "#C57BD9",
+        "d_colour": "#C57BD9",
+        "complexity": "0.046929107",
+        "opp_gain": "0",
+        "export_value": "3"
+    },
+    {
+        "product_code": "Phil Bennett Owen",
+        "global_export": "37.26375756",
+        "sector": "Chemicals",
+        "main_supervisor": "Tom Chandler",
+        "product_name": "Bennett.Owen@monash.edu",
+        "rca": "0",
+        "colour": "#C57BD9",
+        "d_colour": "#708090",
+        "complexity": "-0.9720485",
+        "opp_gain": "-0.267731041",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Benjamin Phua",
+        "global_export": "13.73921009",
+        "sector": "Chemicals",
+        "main_supervisor": "Michael Wybrow",
+        "product_name": "benjamin.phua@monash.edu",
+        "rca": "0",
+        "colour": "#C57BD9",
+        "d_colour": "#F5CF23",
+        "complexity": "0.580678884",
+        "opp_gain": "0",
+        "export_value": "2"
+    },
+    {
+        "product_code": "Mengxing Li",
+        "global_export": "3.988756897",
+        "sector": "Chemicals",
+        "main_supervisor": "Sarah Goodwin",
+        "product_name": "mengxing.li@monash.edu",
+        "rca": "0",
+        "colour": "#C57BD9",
+        "d_colour": "#D97B7B",
+        "complexity": "0.855517497",
+        "opp_gain": "0",
+        "export_value": "5"
+    },
+    {
+        "product_code": "Vahid Pooryousef",
+        "global_export": "5.830359238",
+        "sector": "Chemicals",
+        "main_supervisor": "Tim Dwyer",
+        "product_name": "vahid.pooryousef@monash.edu",
+        "rca": "0",
+        "colour": "#C57BD9",
+        "d_colour": "#BB968A",
+        "complexity": "0.95771887",
+        "opp_gain": "0.195121121",
+        "export_value": "5"
+    },
+    {
+        "product_code": "Songhai Fan",
+        "global_export": "100.4707149",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tim Dwyer",
+        "product_name": "songhai.fan@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#00A6AA",
+        "complexity": "1.334420007",
+        "opp_gain": "0",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Shaozhang Dai",
+        "global_export": "147.7826689",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tim Dwyer",
+        "product_name": "Shaozhang.Dai1@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#f5eadc",
+        "complexity": "0.744390576",
+        "opp_gain": "0",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Kabir Rufai",
+        "global_export": "13.59918085",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Helen Purchase",
+        "product_name": "kabir.rufai@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#DA3329",
+        "complexity": "0.828857209",
+        "opp_gain": "0",
+        "export_value": "4"
+    },
+    {
+        "product_code": "David Cheng Zarate",
+        "global_export": "12.9067603",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Michael Wybrow",
+        "product_name": "david.chengzarate1@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#708090",
+        "complexity": "1.436320654",
+        "opp_gain": "0",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Amal Alshardy",
+        "global_export": "574.9593467",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Sarah Goodwin",
+        "product_name": "amal.alshardy@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#f5eadc",
+        "complexity": "1.219438175",
+        "opp_gain": "0",
+        "export_value": "3"
+    },
+    {
+        "product_code": "Jessica Bou Nassar",
+        "global_export": "103.92325",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Sarah Goodwin",
+        "product_name": "jessica.bounassar@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#D97B7B",
+        "complexity": "1.050438531",
+        "opp_gain": "0.204468095",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Fucai Ke",
+        "global_export": "268.0572555",
+        "sector": "Material Manufacturers",
+        "main_supervisor": "Pari Delir Haghighi",
+        "product_name": "Fucai.Ke1@monash.edu",
+        "rca": "0",
+        "colour": "#DA3329",
+        "d_colour": "#708090",
+        "complexity": "1.097637797",
+        "opp_gain": "0",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Gavin Mooney",
+        "global_export": "146.8449182",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Helen Purchase",
+        "product_name": "gavin.mooney@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#00A6AA",
+        "complexity": "0.150696708",
+        "opp_gain": "-0.015557023",
+        "export_value": "3"
+    },
+    {
+        "product_code": "Cynthia Huang",
+        "global_export": "33.75924619",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Sarah Goodwin",
+        "product_name": "cynthia.huang@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#FDA81B",
+        "complexity": "0.925120861",
+        "opp_gain": "0.233436126",
+        "export_value": "4"
+    },
+    {
+        "product_code": "Harriet Mason",
+        "global_export": "137.9315828",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Sarah Goodwin",
+        "product_name": "harriet.mason1@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#FDA81B",
+        "complexity": "1.264830137",
+        "opp_gain": "0",
+        "export_value": "5"
+    },
+    {
+        "product_code": "Simon Gitson",
+        "global_export": "270.5641719",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tom Chandler",
+        "product_name": "simon.gitson@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#708090",
+        "complexity": "1.383457533",
+        "opp_gain": "0",
+        "export_value": " "
+    },
+    {
+        "product_code": "Thomas Romanis",
+        "global_export": "486.3996222",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tom Chandler",
+        "product_name": "thomas.romanis@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#D97B7B",
+        "complexity": "1.373628475",
+        "opp_gain": "0",
+        "export_value": "2"
+    },
+    {
+        "product_code": "Rick Laird",
+        "global_export": "841.1604736",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tom ChandlerTim Dwyer",
+        "product_name": "rick.laird@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#708090",
+        "complexity": "0.69519317",
+        "opp_gain": "0.161346567",
+        "export_value": " "
+    },
+    {
+        "product_code": "Mona Alzahrani",
+        "global_export": "58.41082683",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Michael Wybrow",
+        "product_name": "mona.alzahrani@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#F5CF23",
+        "complexity": "0.302897709",
+        "opp_gain": "0.090977984",
+        "export_value": "2"
+    },
+    {
+        "product_code": "Yasmin Alamoudi",
+        "global_export": "52.71825435",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Michael Wybrow",
+        "product_name": "yasmin.alamoudi@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#F5CF23",
+        "complexity": "0.579182572",
+        "opp_gain": "0.147451028",
+        "export_value": "1"
+    },
+    {
+        "product_code": "I Gede Mahendra Darmawiguna",
+        "global_export": "213.246439",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tom Chandler",
+        "product_name": "i.darmawiguna@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#D97B7B",
+        "complexity": "1.392637413",
+        "opp_gain": "0.315264683",
+        "export_value": "1"
+    },
+    {
+        "product_code": "Mingsheng Jia (Cody)",
+        "global_export": "56.97942039",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Tim Dwyer",
+        "product_name": "mingsheng.jia@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#708090",
+        "complexity": "0.79510839",
+        "opp_gain": "0.207512378",
+        "export_value": "1"
+    },
+    {
+        "product_code": "Simone Rusin",
+        "global_export": "28.58785455",
+        "sector": "Machinery and Vehicles",       "main_supervisor": "Tim Dwyer",
+        "product_name": "simone.rusin@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#FE85AD",
+        "complexity": "0.452222611",
+        "opp_gain": "0.108363275",
+        "export_value": "1"
+    },
+    {
+        "product_code": "Yiheng Liang",
+        "global_export": "29.23529937",
+        "sector": "Machinery and Vehicles",
+        "main_supervisor": "Helen Purchase",
+        "product_name": "Yiheng.Liang@monash.edu",
+        "rca": "0",
+        "colour": "#7BA2D9",
+        "d_colour": "#2A607C",
+        "complexity": "0.503126413",
+        "opp_gain": "0.160140531",
+        "export_value": "1"
+    }
+],
+  "links": [
+  {
+    "source": "Adrian Kristanto",
+    "target": "Songhai Fan",
+    "weight": 0.533
+  },
+  {
+    "source": "Adrian Kristanto",
+    "target": "Mingsheng Jia (Cody)",
+    "weight": 0.433
+  },
+  {
+    "source": "Adrian Kristanto",
+    "target": "Shaozhang Dai",
+    "weight": 0.367
+  },
+  {
+    "source": "Adrian Kristanto",
+    "target": "Vahid Pooryousef",
+    "weight": 0.358
+  },
+  {
+    "source": "Adrian Kristanto",
+    "target": "Merry Kim Hoang",
+    "weight": 0.233
+  },
+  {
+    "source": "Amal Alshardy",
+    "target": "Mengxing Li",
+    "weight": 0.433
+  },
+  {
+    "source": "Amal Alshardy",
+    "target": "Merry Kim Hoang",
+    "weight": 0.317
+  },
+  {
+    "source": "Amal Alshardy",
+    "target": "Jessica Bou Nassar",
+    "weight": 0.3
+  },
+  {
+    "source": "Amal Alshardy",
+    "target": "Mike Yeates",
+    "weight": 0.283
+  },
+  {
+    "source": "Amal Alshardy",
+    "target": "Shaozhang Dai",
+    "weight": 0.25
+  },
+  {
+    "source": "Benjamin Phua",
+    "target": "Yasmin Alamoudi",
+    "weight": 0.65
+  },
+  {
+    "source": "Benjamin Phua",
+    "target": "Mona Alzahrani",
+    "weight": 0.517
+  },
+  {
+    "source": "Benjamin Phua",
+    "target": "Mike Yeates",
+    "weight": 0.35
+  },
+  {
+    "source": "Benjamin Phua",
+    "target": "Shaozhang Dai",
+    "weight": 0.25
+  },
+  {
+    "source": "Benjamin Phua",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0.233
+  },
+  {
+    "source": "Cynthia Huang",
+    "target": "Harriet Mason",
+    "weight": 0.45
+  },
+  {
+    "source": "Cynthia Huang",
+    "target": "Merry Kim Hoang",
+    "weight": 0.4
+  },
+  {
+    "source": "Cynthia Huang",
+    "target": "Jessica Bou Nassar",
+    "weight": 0.325
+  },
+  {
+    "source": "Cynthia Huang",
+    "target": "Yiheng Liang",
+    "weight": 0.25
+  },
+  {
+    "source": "Cynthia Huang",
+    "target": "Amal Alshardy",
+    "weight": 0.2
+  },
+  {
+    "source": "David Cheng Zarate",
+    "target": "Mona Alzahrani",
+    "weight": 0.2
+  },
+  {
+    "source": "David Cheng Zarate",
+    "target": "Yasmin Alamoudi",
+    "weight": 0.2
+  },
+  {
+    "source": "David Cheng Zarate",
+    "target": "Benjamin Phua",
+    "weight": 0.2
+  },
+  {
+    "source": "David Cheng Zarate",
+    "target": "Shaozhang Dai",
+    "weight": 0
+  },
+  {
+    "source": "David Cheng Zarate",
+    "target": "Songhai Fan",
+    "weight": 0
+  },
+  {
+    "source": "Fucai Ke",
+    "target": "Syam Mohan",
+    "weight": 0.2
+  },
+  {
+    "source": "Fucai Ke",
+    "target": "Gavin Mooney",
+    "weight": 0
+  },
+  {
+    "source": "Fucai Ke",
+    "target": "Mike Yeates",
+    "weight": 0
+  },
+  {
+    "source": "Fucai Ke",
+    "target": "Amal Alshardy",
+    "weight": 0
+  },
+  {
+    "source": "Fucai Ke",
+    "target": "David Cheng Zarate",
+    "weight": 0
+  },
+  {
+    "source": "Gavin Mooney",
+    "target": "Yiheng Liang",
+    "weight": 0.45
+  },
+  {
+    "source": "Gavin Mooney",
+    "target": "Jessica Bou Nassar",
+    "weight": 0.333
+  },
+  {
+    "source": "Gavin Mooney",
+    "target": "Kabir Rufai",
+    "weight": 0.2
+  },
+  {
+    "source": "Gavin Mooney",
+    "target": "Merry Kim Hoang",
+    "weight": 0.2
+  },
+  {
+    "source": "Gavin Mooney",
+    "target": "Cynthia Huang",
+    "weight": 0.167
+  },
+  {
+    "source": "Harriet Mason",
+    "target": "Merry Kim Hoang",
+    "weight": 0.3
+  },
+  {
+    "source": "Harriet Mason",
+    "target": "Jessica Bou Nassar",
+    "weight": 0.2
+  },
+  {
+    "source": "Harriet Mason",
+    "target": "Amal Alshardy",
+    "weight": 0.2
+  },
+  {
+    "source": "Harriet Mason",
+    "target": "Mengxing Li",
+    "weight": 0.2
+  },
+  {
+    "source": "I Gede Mahendra Darmawiguna",
+    "target": "Thomas Romanis",
+    "weight": 0.7
+  },
+  {
+    "source": "I Gede Mahendra Darmawiguna",
+    "target": "Mike Yeates",
+    "weight": 0.517
+  },
+  {
+    "source": "I Gede Mahendra Darmawiguna",
+    "target": "Mengxing Li",
+    "weight": 0.5
+  },
+  {
+    "source": "I Gede Mahendra Darmawiguna",
+    "target": "Michael Neylan",
+    "weight": 0.267
+  },
+  {
+    "source": "I Gede Mahendra Darmawiguna",
+    "target": "Shaozhang Dai",
+    "weight": 0.25
+  },
+  {
+    "source": "Jessica Bou Nassar",
+    "target": "Merry Kim Hoang",
+    "weight": 0.4
+  },
+  {
+    "source": "Jessica Bou Nassar",
+    "target": "Mengxing Li",
+    "weight": 0.392
+  },
+  {
+    "source": "Kabir Rufai",
+    "target": "Mike Yeates",
+    "weight": 0.25
+  },
+  {
+    "source": "Kabir Rufai",
+    "target": "Shaozhang Dai",
+    "weight": 0.25
+  },
+  {
+    "source": "Kabir Rufai",
+    "target": "Yiheng Liang",
+    "weight": 0.2
+  },
+  {
+    "source": "Kabir Rufai",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0.167
+  },
+  {
+    "source": "Mengxing Li",
+    "target": "Thomas Romanis",
+    "weight": 0.5
+  },
+  {
+    "source": "Mengxing Li",
+    "target": "Merry Kim Hoang",
+    "weight": 0.4
+  },
+  {
+    "source": "Michael Neylan",
+    "target": "Mike Yeates",
+    "weight": 0.3
+  },
+  {
+    "source": "Michael Neylan",
+    "target": "Phil Bennett Owen",
+    "weight": 0.233
+  },
+  {
+    "source": "Michael Neylan",
+    "target": "Simon Gitson",
+    "weight": 0.2
+  },
+  {
+    "source": "Michael Neylan",
+    "target": "Thomas Romanis",
+    "weight": 0.2
+  },
+  {
+    "source": "Mike Yeates",
+    "target": "Shaozhang Dai",
+    "weight": 0.5
+  },
+  {
+    "source": "Mike Yeates",
+    "target": "Thomas Romanis",
+    "weight": 0.45
+  },
+  {
+    "source": "Mingsheng Jia (Cody)",
+    "target": "Simone Rusin",
+    "weight": 0.3
+  },
+  {
+    "source": "Mingsheng Jia (Cody)",
+    "target": "Tri Cahyo Edi",
+    "weight": 0.3
+  },
+  {
+    "source": "Mingsheng Jia (Cody)",
+    "target": "Vahid Pooryousef",
+    "weight": 0.2
+  },
+  {
+    "source": "Mingsheng Jia (Cody)",
+    "target": "Songhai Fan",
+    "weight": 0.2
+  },
+  {
+    "source": "Mona Alzahrani",
+    "target": "Yasmin Alamoudi",
+    "weight": 0.7
+  },
+  {
+    "source": "Mona Alzahrani",
+    "target": "Adrian Kristanto",
+    "weight": 0.1
+  },
+  {
+    "source": "Mona Alzahrani",
+    "target": "Merry Kim Hoang",
+    "weight": 0.067
+  },
+  {
+    "source": "Phil Bennett Owen",
+    "target": "Mike Yeates",
+    "weight": 0.233
+  },
+  {
+    "source": "Phil Bennett Owen",
+    "target": "Simon Gitson",
+    "weight": 0.2
+  },
+  {
+    "source": "Phil Bennett Owen",
+    "target": "Rick Laird",
+    "weight": 0.2
+  },
+  {
+    "source": "Phil Bennett Owen",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0.2
+  },
+  {
+    "source": "Rick Laird",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0.2
+  },
+  {
+    "source": "Rick Laird",
+    "target": "Mike Yeates",
+    "weight": 0.2
+  },
+  {
+    "source": "Rick Laird",
+    "target": "Michael Neylan",
+    "weight": 0.2
+  },
+  {
+    "source": "Rick Laird",
+    "target": "Simon Gitson",
+    "weight": 0.2
+  },
+  {
+    "source": "Shaozhang Dai",
+    "target": "Vahid Pooryousef",
+    "weight": 0.45
+  },
+  {
+    "source": "Shaozhang Dai",
+    "target": "Thomas Romanis",
+    "weight": 0.25
+  },
+  {
+    "source": "Simon Gitson",
+    "target": "Thomas Romanis",
+    "weight": 0.2
+  },
+  {
+    "source": "Simon Gitson",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0.2
+  },
+  {
+    "source": "Simone Rusin",
+    "target": "Tri Cahyo Edi",
+    "weight": 0.55
+  },
+  {
+    "source": "Simone Rusin",
+    "target": "Adrian Kristanto",
+    "weight": 0.233
+  },
+  {
+    "source": "Simone Rusin",
+    "target": "Vahid Pooryousef",
+    "weight": 0.2
+  },
+  {
+    "source": "Simone Rusin",
+    "target": "Songhai Fan",
+    "weight": 0.2
+  },
+  {
+    "source": "Songhai Fan",
+    "target": "Shaozhang Dai",
+    "weight": 0.2
+  },
+  {
+    "source": "Songhai Fan",
+    "target": "Vahid Pooryousef",
+    "weight": 0.2
+  },
+  {
+    "source": "Songhai Fan",
+    "target": "Tri Cahyo Edi",
+    "weight": 0.2
+  },
+  {
+    "source": "Syam Mohan",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0.1
+  },
+  {
+    "source": "Syam Mohan",
+    "target": "Mingsheng Jia (Cody)",
+    "weight": 0.1
+  },
+  {
+    "source": "Syam Mohan",
+    "target": "Simone Rusin",
+    "weight": 0.1
+  },
+  {
+    "source": "Syam Mohan",
+    "target": "Yiheng Liang",
+    "weight": 0.1
+  },
+  {
+    "source": "Thomas Romanis",
+    "target": "Phil Bennett Owen",
+    "weight": 0.2
+  },
+  {
+    "source": "Tri Cahyo Edi",
+    "target": "Vahid Pooryousef",
+    "weight": 0.325
+  },
+  {
+    "source": "Tri Cahyo Edi",
+    "target": "Adrian Kristanto",
+    "weight": 0.233
+  },
+  {
+    "source": "Vahid Pooryousef",
+    "target": "Mengxing Li",
+    "weight": 0.267
+  },
+  {
+    "source": "Vahid Pooryousef",
+    "target": "Mike Yeates",
+    "weight": 0.25
+  },
+  {
+    "source": "Yasmin Alamoudi",
+    "target": "I Gede Mahendra Darmawiguna",
+    "weight": 0
+  },
+  {
+    "source": "Yasmin Alamoudi",
+    "target": "Songhai Fan",
+    "weight": 0
+  },
+  {
+    "source": "Yiheng Liang",
+    "target": "Jessica Bou Nassar",
+    "weight": 0.167
+  },
+  {
+    "source": "Yiheng Liang",
+    "target": "Merry Kim Hoang",
+    "weight": 0.167
+  }
+]
+}

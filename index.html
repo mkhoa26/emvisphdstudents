@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+    <head>
+        <title>EmVis PHD Students</title>
+        <link rel="stylesheet" href="pe3.css">
+    </head>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 10, bottom: 0, left: 10},
+  width = 1500 - margin.left - margin.right,
+  height = 1200 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform",
+        "translate(" + margin.left +  "," + margin.top + ")");
+
+d3.json("data.json", function( data) {
+        console.log(data)
+    
+        // Get min and max value to scale node
+        var minValue = Infinity;
+        var maxValue = -1;
+        data.nodes.forEach(function (thisD) {
+            var thisValue = thisD.export_value;
+            minValue = Math.min(minValue, thisValue);
+            maxValue = Math.max(maxValue, thisValue);
+        });
+        
+        var radiusScale = d3.scaleLinear()
+            .domain([minValue, maxValue])
+            .range([6, 30]);  
+    
+        // Get min and max value to scale lines
+        var minValueL = Infinity;
+        var maxValueL = -1;
+        data.links.forEach(function (thisD) {
+            var thisValue = thisD.weight;
+            minValueL = Math.min(minValueL, thisValue);
+            maxValueL = Math.max(maxValueL, thisValue);
+        });
+
+        var lineScale = d3.scaleLinear()
+            .domain([minValueL, maxValueL])
+            .range([0.4, 5]);
+    
+        // Create tooltip
+        var tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip");
+
+    
+        // Dictionary of node and neighbours
+        var node2neighbors = {};
+        for (var i =0; i < data.nodes.length; i++){
+            var name = data.nodes[i].product_code;
+            node2neighbors[name] = data.links.filter(function (d){
+                    return d.source == name || d.target == name;
+                }).map(function(d){
+                    return d.source == name ? d.target : d.source;
+                });
+        }
+    
+        console.log(node2neighbors)
+    
+        // Interactive hovers and fades
+        // Dictionary of links using node id
+        var linkedByIndex = {};
+        data.links.forEach(function(d) {
+            linkedByIndex[d.source + "," + d.target] = 1;
+        });
+        
+        function isConnected(a, b) {
+            return linkedByIndex[a.product_code + "," + b.product_code] || linkedByIndex[b.product_code + "," + a.product_code] || a.product_code == b.product_code;
+        }
+        
+        function mouseOver(opacity) { 
+            return function(d) {
+
+            node.style("stroke-opacity", function (o) {
+                thisOpacity = isConnected(d, o) ? 1 : opacity;
+                return thisOpacity;
+            });
+            node.style("fill-opacity", function (o) {
+                thisOpacity = isConnected(d, o) ? 1 : opacity;
+                return thisOpacity;
+            });
+            link.style("stroke-opacity", function (o) {
+                return o.source.product_code === d.product_code || o.target.product_code === d.product_code ? 1 : opacity;
+            });
+//            link.style("stroke", function (o) {
+//                return o.source.product_code === d.product_code || o.target.product_code === d.product_code ? o.source.colour : "SlateGrey";
+//            });
+                
+        // Add tooltip to mouseOver
+        tooltip.transition()
+            .duration('50')
+            .style("opacity", 1);
+        tooltip.html("<strong>Student information</strong>" + "<br/>" + "Name: " + d.product_code + "<br/>" + "Email: " + d.product_name + "<br/>" + "Main Supervisor: " +
+        d.main_supervisor + "<br/>"+ " Year: " + d.export_value + "<br/>" + " Connections: " + node2neighbors[d.product_code].length)
+            .style("left", (d3.event.pageX + 20) + "px")
+            .style("top", (d3.event.pageY - 15) + "px")
+            .style("pointer-events", "none");
+                    };
+            
+        }
+        
+        function mouseOut () {
+            node.style("stroke-opacity", 1);
+            node.style("fill-opacity", 1);
+            link.style("stroke-opacity", 0.4);
+            link.style("stroke", "SlateGray");
+            tooltip.transition()
+                .duration('50')
+                .style("opacity", 0);
+        }
+    
+        // Initialize the nodes
+        var node = svg
+            .selectAll("circle")
+            .data(data.nodes)
+            .enter()
+            .append("circle")
+            .attr("r", function (d) {
+              return radiusScale(d.export_value);
+            })
+          //.style("fill", "#69b3a2")
+            .style("fill", function(d) {
+               return d.d_colour;
+            })
+            .style("stroke", "#666")
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .on("mouseover", mouseOver(.1))
+            .on("mouseout", mouseOut);
+    
+        // Let's list the force we wanna apply on the network
+        var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
+            .force("link", d3.forceLink()                               // This force provides links between nodes
+                .id(function(d) { return d.product_code; })                     // This provide  the id of a node
+                .links(data.links)                                    // and this the list of links
+            )
+            .force("charge", d3.forceManyBody().strength(-1000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+            .force("center", d3.forceCenter(width/2, height/2))     // This force attracts nodes to the center of the svg area
+            .on("end", ticked);
+
+          // This function is run at each iteration of the force algorithm, updating the nodes position.
+          function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                 .attr("cx", function (d) { return d.x; })
+                 .attr("cy", function(d) { return d.y; });
+          }
+    
+
+        // Initialize the links
+        var link = svg
+            .selectAll("line")
+            .data(data.links)
+            .enter()
+            .append("line")
+            .attr("class", "link")
+//            .attr("x1", function (d) {
+//                return node.filter(function(e) {
+//                    return e.product_code === d.source
+//                    })
+//                })
+//            .attr("x2", function (d) {
+//                return node.filter(function(e) {
+//                    return e.product_code === d.target
+//                    })
+//                })
+//            .attr("y1", function (d) {
+//                return node.filter(function(e) {
+//                    return e.product_code === d.source
+//                    })
+//                })
+//            .attr("y2", function (d) {
+//                return node.filter(function(e) {
+//                    return e.product_code === d.target
+//                    })
+//                })
+      
+        // Bring nodes to front
+        node.raise();
+
+            // Handmade legend
+        svg.append("circle").attr("cx",200).attr("cy",130).attr("r", 6).style("fill", "#F5CF23")
+        svg.append("circle").attr("cx",200).attr("cy",160).attr("r", 6).style("fill", "#FE85AD")
+        svg.append("circle").attr("cx",200).attr("cy",190).attr("r", 6).style("fill", "#D97B7B")
+        svg.append("circle").attr("cx",200).attr("cy",220).attr("r", 6).style("fill", "#BB968A")
+        svg.append("circle").attr("cx",200).attr("cy",250).attr("r", 6).style("fill", "#FDA81B")
+        svg.append("circle").attr("cx",200).attr("cy",280).attr("r", 6).style("fill", "#C57BD9")
+        svg.append("circle").attr("cx",200).attr("cy",310).attr("r", 6).style("fill", "#DA3329")
+        svg.append("circle").attr("cx",200).attr("cy",340).attr("r", 6).style("fill", "#7BA2D9")
+        svg.append("circle").attr("cx",200).attr("cy",370).attr("r", 6).style("fill", "#00A6AA")
+        svg.append("circle").attr("cx",200).attr("cy",400).attr("r", 6).style("fill", "#2A607C")
+        svg.append("circle").attr("cx",200).attr("cy",430).attr("r", 6).style("fill", "#f5eadc")
+    
+
+
+        svg.append("text").attr("x", 220).attr("y", 130).text("Accessibility")
+        svg.append("text").attr("x", 220).attr("y", 160).text("AI")
+        svg.append("text").attr("x", 220).attr("y", 190).text("Anthropology")
+        svg.append("text").attr("x", 220).attr("y", 220).text("Crime")
+        svg.append("text").attr("x", 220).attr("y", 250).text("Data Trust & Transparency")
+        svg.append("text").attr("x", 220).attr("y", 280).text("Energy")
+        svg.append("text").attr("x", 220).attr("y", 310).text("Healthcare")
+        svg.append("text").attr("x", 220).attr("y", 340).text("Interaction")
+        svg.append("text").attr("x", 220).attr("y", 370).text("Network/Graphs")
+        svg.append("text").attr("x", 220).attr("y", 400).text("Qualitative Methods")
+        svg.append("text").attr("x", 220).attr("y", 430).text("VR/AR/Mixed Reality")
+        
+});
+
+
+</script>
