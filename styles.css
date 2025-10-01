@@ -1,0 +1,193 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: Everett Mono;
+  src: url(fonts/Everett-Regular-web.woff2) format("woff2"),
+    url(fonts/Everett-Regular-web.woff) format("woff"),
+    url(fonts/Everett-Regular-web.eot) format("eot"),
+    url(fonts/Everett-Regular-web.ttf) format("ttf"),
+    url(fonts/Everett-Regular-web.svg) format("svg");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Everett Mono;
+  src: url(fonts/Everett-Medium-web.woff2) format("woff2"),
+    url(fonts/Everett-Medium-web.woff) format("woff"),
+    url(fonts/Everett-Medium-web.eot) format("eot"),
+    url(fonts/Everett-Medium-web.ttf) format("ttf"),
+    url(fonts/Everett-Medium-web.svg) format("svg");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Body and background */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, #0a0e27 0%, #151933 50%, #0a0e27 100%);
+  min-height: 100vh;
+}
+
+/* Main visualization container */
+#my_dataviz {
+  background: transparent;
+}
+
+/* Nodes */
+.node,
+circle {
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 1.5px;
+  cursor: pointer;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+}
+
+/* Links */
+.link {
+  fill: none;
+  stroke: rgba(147, 169, 209, 0.3);
+  stroke-opacity: 0.3;
+  pointer-events: auto;
+}
+
+/* Supervisor links */
+.supervisor-link {
+  fill: none;
+  stroke: rgba(255, 215, 0, 0.4);
+  stroke-width: 1.5px;
+  stroke-dasharray: 3, 2;
+}
+
+/* Supervisor nodes */
+.supervisor-node {
+  fill: rgba(255, 215, 0, 0.8);
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 2px;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+}
+
+/* Text */
+text {
+  font-family: Everett Mono, Times New Roman, sans-serif;
+  font-size: 12px;
+  text-align: left;
+  fill: rgba(255, 255, 255, 0.8);
+}
+
+/* Labels */
+.label {
+  fill: rgba(255, 215, 0, 0.9);
+  font-weight: bold;
+}
+
+.supervisor-label {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  padding: 12px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #333;
+  pointer-events: none;
+  max-width: 250px;
+}
+
+/* Control buttons */
+.controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 500px;
+}
+
+.controls button {
+  padding: 10px 15px;
+  font-family: Everett Mono, Times New Roman, sans-serif;
+  font-size: 13px;
+  background-color: rgba(10, 14, 39, 0.85);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(147, 169, 209, 0.3);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.controls button:hover {
+  background-color: rgba(20, 25, 50, 0.9);
+  color: white;
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.controls button.active {
+  background-color: rgba(255, 215, 0, 0.15);
+  color: rgba(255, 215, 0, 0.9);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+/* Floating legend container */
+.floating-legend-container {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  width: 220px;
+  z-index: 1000;
+}
+
+/* Legend background and styling */
+.legend-bg {
+  fill: rgba(10, 14, 39, 0.85);
+  stroke: rgba(255, 215, 0, 0.2);
+  stroke-width: 1px;
+}
+
+.legend-title {
+  font-weight: bold;
+  fill: rgba(255, 215, 0, 0.9);
+  font-size: 14px;
+  font-family: Everett Mono, Times New Roman, sans-serif;
+}
+
+.legend-item {
+  cursor: pointer;
+}
+
+.legend-label {
+  fill: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  font-family: Everett Mono, Times New Roman, sans-serif;
+}
+
+.legend-count {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  font-family: Everett Mono, Times New Roman, sans-serif;
+}
+
+/* Circular legend items */
+.circular-legend-item {
+  cursor: pointer;
+}
+
+.circular-legend-item text {
+  font-family: Everett Mono, Times New Roman, sans-serif;
+  font-weight: 500;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 3px rgba(0, 0, 0, 0.9);
+}

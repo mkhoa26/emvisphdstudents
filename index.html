@@ -1,47 +1,78 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-    <head>
-        <title>EmVis PHD Students</title>
-        <link rel="stylesheet" href="pe3.css">
-    </head>
+
+<head>
+    <title>EmVis PHD Students</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Control buttons -->
+<div class="controls">
+    <button id="forceBtn" class="active">Force Layout</button>
+    <button id="circularBtn">Circular Layout</button>
+    <button id="hierarchicalBtn">Hierarchical Layout</button>
+</div>
 
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
 <script>
 
-// set the dimensions and margins of the graph
-var margin = {top: 20, right: 10, bottom: 0, left: 10},
-  width = 1500 - margin.left - margin.right,
-  height = 1200 - margin.top - margin.bottom;
+    // set the dimensions and margins of the graph
+    var margin = { top: 20, right: 10, bottom: 0, left: 10 },
+        width = 1500 - margin.left - margin.right,
+        height = 1200 - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr("transform",
-        "translate(" + margin.left +  "," + margin.top + ")");
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("data.json", function( data) {
-        console.log(data)
-    
+    // Global variables
+    var simulation;
+    var node, link;
+    var currentLayout = "force";
+    var previousLayout = "force";
+    var gridSortBy = "supervisor";
+
+    d3.json("data.json", function (error, data) {
+        if (error) {
+            console.error("Error loading data:", error);
+            return;
+        }
+
+        console.log(data);
+
+        // Convert study_year to number and handle empty strings
+        data.nodes.forEach(function (thisD) {
+            // Handle empty or space-only strings
+            if (thisD.study_year === " " || thisD.study_year === "" || thisD.study_year === undefined) {
+                thisD.study_year = 1;
+            } else {
+                thisD.study_year = +thisD.study_year;
+            }
+        });
+
         // Get min and max value to scale node
         var minValue = Infinity;
         var maxValue = -1;
         data.nodes.forEach(function (thisD) {
-            var thisValue = thisD.export_value;
+            var thisValue = thisD.study_year;
             minValue = Math.min(minValue, thisValue);
             maxValue = Math.max(maxValue, thisValue);
         });
-        
+
         var radiusScale = d3.scaleLinear()
             .domain([minValue, maxValue])
-            .range([6, 30]);  
-    
+            .range([6, 30]);
+
         // Get min and max value to scale lines
         var minValueL = Infinity;
         var maxValueL = -1;
@@ -54,184 +85,893 @@ d3.json("data.json", function( data) {
         var lineScale = d3.scaleLinear()
             .domain([minValueL, maxValueL])
             .range([0.4, 5]);
-    
+
         // Create tooltip
         var tooltip = d3.select("body")
             .append("div")
-            .attr("class", "tooltip");
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("opacity", 0)
+            .style("background-color", "rgba(255, 255, 255, 0.9)")
+            .style("border-radius", "10px")
+            .style("box-shadow", "4px 4px 10px rgba(0, 0, 0, 0.4)")
+            .style("padding", "12px")
+            .style("font-family", "Arial, sans-serif")
+            .style("font-size", "12px")
+            .style("line-height", "1.5")
+            .style("color", "#333")
+            .style("pointer-events", "none")
+            .style("max-width", "250px");
 
-    
         // Dictionary of node and neighbours
         var node2neighbors = {};
-        for (var i =0; i < data.nodes.length; i++){
-            var name = data.nodes[i].product_code;
-            node2neighbors[name] = data.links.filter(function (d){
-                    return d.source == name || d.target == name;
-                }).map(function(d){
-                    return d.source == name ? d.target : d.source;
-                });
+        for (var i = 0; i < data.nodes.length; i++) {
+            var name = data.nodes[i].student_name;
+            node2neighbors[name] = data.links.filter(function (d) {
+                return d.source == name || d.target == name;
+            }).map(function (d) {
+                return d.source == name ? d.target : d.source;
+            });
         }
-    
-        console.log(node2neighbors)
-    
+
+        console.log(node2neighbors);
+
         // Interactive hovers and fades
         // Dictionary of links using node id
         var linkedByIndex = {};
-        data.links.forEach(function(d) {
+        data.links.forEach(function (d) {
             linkedByIndex[d.source + "," + d.target] = 1;
         });
-        
-        function isConnected(a, b) {
-            return linkedByIndex[a.product_code + "," + b.product_code] || linkedByIndex[b.product_code + "," + a.product_code] || a.product_code == b.product_code;
-        }
-        
-        function mouseOver(opacity) { 
-            return function(d) {
 
-            node.style("stroke-opacity", function (o) {
-                thisOpacity = isConnected(d, o) ? 1 : opacity;
-                return thisOpacity;
-            });
-            node.style("fill-opacity", function (o) {
-                thisOpacity = isConnected(d, o) ? 1 : opacity;
-                return thisOpacity;
-            });
-            link.style("stroke-opacity", function (o) {
-                return o.source.product_code === d.product_code || o.target.product_code === d.product_code ? 1 : opacity;
-            });
-//            link.style("stroke", function (o) {
-//                return o.source.product_code === d.product_code || o.target.product_code === d.product_code ? o.source.colour : "SlateGrey";
-//            });
-                
-        // Add tooltip to mouseOver
-        tooltip.transition()
-            .duration('50')
-            .style("opacity", 1);
-        tooltip.html("<strong>Student information</strong>" + "<br/>" + "Name: " + d.product_code + "<br/>" + "Email: " + d.product_name + "<br/>" + "Main Supervisor: " +
-        d.main_supervisor + "<br/>"+ " Year: " + d.export_value + "<br/>" + " Connections: " + node2neighbors[d.product_code].length)
-            .style("left", (d3.event.pageX + 20) + "px")
-            .style("top", (d3.event.pageY - 15) + "px")
-            .style("pointer-events", "none");
-                    };
-            
+        function isConnected(a, b) {
+            return linkedByIndex[a.student_name + "," + b.student_name] ||
+                linkedByIndex[b.student_name + "," + a.student_name] ||
+                a.student_name == b.student_name;
         }
-        
-        function mouseOut () {
+
+        function mouseOver(opacity) {
+            return function (d) {
+                node.style("stroke-opacity", function (o) {
+                    thisOpacity = isConnected(d, o) ? 1 : opacity;
+                    return thisOpacity;
+                });
+                node.style("fill-opacity", function (o) {
+                    thisOpacity = isConnected(d, o) ? 1 : opacity;
+                    return thisOpacity;
+                });
+                link.style("stroke-opacity", function (o) {
+                    return o.source.student_name === d.student_name ||
+                        o.target.student_name === d.student_name ? 1 : opacity;
+                });
+
+                // Add tooltip to mouseOver
+                tooltip.transition()
+                    .duration('50')
+                    .style("opacity", 1);
+
+                var email = d.email || "N/A";
+                var connections = node2neighbors[d.student_name] ? node2neighbors[d.student_name].length : 0;
+
+                tooltip.html("<div style='font-weight: bold; margin-bottom: 8px; color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 5px;'>" +
+                    d.student_name + "</div>" +
+                    "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Email:</span> " + email + "</div>" +
+                    "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Supervisor:</span> " + d.main_supervisor + "</div>" +
+                    "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Year:</span> " + d.study_year + "</div>" +
+                    "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Sector:</span> " + (d.sector || "Unknown") + "</div>" +
+                    "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Connections:</span> " + connections + "</div>")
+                    .style("left", (d3.event.pageX + 15) + "px")
+                    .style("top", (d3.event.pageY - 15) + "px");
+            };
+        }
+
+        function mouseOut() {
             node.style("stroke-opacity", 1);
             node.style("fill-opacity", 1);
-            link.style("stroke-opacity", 0.4);
-            link.style("stroke", "SlateGray");
+            link.style("stroke-opacity", 0.3);
             tooltip.transition()
                 .duration('50')
                 .style("opacity", 0);
         }
-    
+
+        // Initialize the links as paths instead of lines
+        link = svg
+            .selectAll(".link")
+            .data(data.links)
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .style("stroke-width", function (d) {
+                return lineScale(d.weight);
+            });
+
         // Initialize the nodes
-        var node = svg
+        node = svg
             .selectAll("circle")
             .data(data.nodes)
             .enter()
             .append("circle")
             .attr("r", function (d) {
-              return radiusScale(d.export_value);
+                return radiusScale(d.study_year);
             })
-          //.style("fill", "#69b3a2")
-            .style("fill", function(d) {
-               return d.d_colour;
-            })
-            .style("stroke", "#666")
-            .attr("cx", function (d) {
-                return d.x;
-            })
-            .attr("cy", function (d) {
-                return d.y;
+            .style("fill", function (d) {
+                return d.d_colour;
             })
             .on("mouseover", mouseOver(.1))
             .on("mouseout", mouseOut);
-    
-        // Let's list the force we wanna apply on the network
-        var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
-            .force("link", d3.forceLink()                               // This force provides links between nodes
-                .id(function(d) { return d.product_code; })                     // This provide  the id of a node
-                .links(data.links)                                    // and this the list of links
-            )
-            .force("charge", d3.forceManyBody().strength(-1000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
-            .force("center", d3.forceCenter(width/2, height/2))     // This force attracts nodes to the center of the svg area
-            .on("end", ticked);
 
-          // This function is run at each iteration of the force algorithm, updating the nodes position.
-          function ticked() {
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
+        // Initialize force simulation
+        simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink()
+                .id(function (d) { return d.student_name; })
+                .links(data.links)
+            )
+            .force("charge", d3.forceManyBody().strength(-500))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .on("tick", ticked);
+
+        // This function is run at each iteration of the force algorithm
+        function ticked() {
+            // Update paths for force layout (straight lines)
+            if (currentLayout === "force") {
+                link.attr("d", function (d) {
+                    return "M" + d.source.x + "," + d.source.y +
+                        "L" + d.target.x + "," + d.target.y;
+                });
+            }
 
             node
-                 .attr("cx", function (d) { return d.x; })
-                 .attr("cy", function(d) { return d.y; });
-          }
-    
+                .attr("cx", function (d) { return d.x; })
+                .attr("cy", function (d) { return d.y; });
+        }
 
-        // Initialize the links
-        var link = svg
-            .selectAll("line")
-            .data(data.links)
-            .enter()
-            .append("line")
-            .attr("class", "link")
-//            .attr("x1", function (d) {
-//                return node.filter(function(e) {
-//                    return e.product_code === d.source
-//                    })
-//                })
-//            .attr("x2", function (d) {
-//                return node.filter(function(e) {
-//                    return e.product_code === d.target
-//                    })
-//                })
-//            .attr("y1", function (d) {
-//                return node.filter(function(e) {
-//                    return e.product_code === d.source
-//                    })
-//                })
-//            .attr("y2", function (d) {
-//                return node.filter(function(e) {
-//                    return e.product_code === d.target
-//                    })
-//                })
-      
         // Bring nodes to front
         node.raise();
 
-            // Handmade legend
-        svg.append("circle").attr("cx",200).attr("cy",130).attr("r", 6).style("fill", "#F5CF23")
-        svg.append("circle").attr("cx",200).attr("cy",160).attr("r", 6).style("fill", "#FE85AD")
-        svg.append("circle").attr("cx",200).attr("cy",190).attr("r", 6).style("fill", "#D97B7B")
-        svg.append("circle").attr("cx",200).attr("cy",220).attr("r", 6).style("fill", "#BB968A")
-        svg.append("circle").attr("cx",200).attr("cy",250).attr("r", 6).style("fill", "#FDA81B")
-        svg.append("circle").attr("cx",200).attr("cy",280).attr("r", 6).style("fill", "#C57BD9")
-        svg.append("circle").attr("cx",200).attr("cy",310).attr("r", 6).style("fill", "#DA3329")
-        svg.append("circle").attr("cx",200).attr("cy",340).attr("r", 6).style("fill", "#7BA2D9")
-        svg.append("circle").attr("cx",200).attr("cy",370).attr("r", 6).style("fill", "#00A6AA")
-        svg.append("circle").attr("cx",200).attr("cy",400).attr("r", 6).style("fill", "#2A607C")
-        svg.append("circle").attr("cx",200).attr("cy",430).attr("r", 6).style("fill", "#f5eadc")
-    
+        // Prepare legend data
+        var sectorColors = [
+            { color: "#F5CF23", label: "Accessibility" },
+            { color: "#FE85AD", label: "AI" },
+            { color: "#D97B7B", label: "Anthropology" },
+            { color: "#BB968A", label: "Crime" },
+            { color: "#FDA81B", label: "Data Trust & Transparency" },
+            { color: "#C57BD9", label: "Energy" },
+            { color: "#DA3329", label: "Healthcare" },
+            { color: "#7BA2D9", label: "Interactions" },
+            { color: "#00A6AA", label: "Networks/Graphs" },
+            { color: "#2A607C", label: "Qualitative Methods" },
+            { color: "#f5eadc", label: "VR/AR/Mixed Reality" },
+            { color: "#708090", label: "Unknown" }
+        ];
 
+        // Count nodes per sector
+        sectorColors.forEach(function (item) {
+            item.count = data.nodes.filter(function (d) {
+                return d.sector === item.label ||
+                    (item.label === "Unknown" && !d.sector);
+            }).length;
+        });
 
-        svg.append("text").attr("x", 220).attr("y", 130).text("Accessibility")
-        svg.append("text").attr("x", 220).attr("y", 160).text("AI")
-        svg.append("text").attr("x", 220).attr("y", 190).text("Anthropology")
-        svg.append("text").attr("x", 220).attr("y", 220).text("Crime")
-        svg.append("text").attr("x", 220).attr("y", 250).text("Data Trust & Transparency")
-        svg.append("text").attr("x", 220).attr("y", 280).text("Energy")
-        svg.append("text").attr("x", 220).attr("y", 310).text("Healthcare")
-        svg.append("text").attr("x", 220).attr("y", 340).text("Interaction")
-        svg.append("text").attr("x", 220).attr("y", 370).text("Network/Graphs")
-        svg.append("text").attr("x", 220).attr("y", 400).text("Qualitative Methods")
-        svg.append("text").attr("x", 220).attr("y", 430).text("VR/AR/Mixed Reality")
-        
-});
+        // Create floating panel legend (for force and hierarchical)
+        // Create as a div element for better positioning
+        var floatingLegendDiv = d3.select("body").append("div")
+            .attr("class", "floating-legend-container")
+            .style("position", "absolute")
+            .style("top", "70px")  // Below the buttons
+            .style("right", "20px")  // Same right margin as buttons
+            .style("width", "220px")
+            .style("z-index", "1000");
 
+        var floatingLegendSvg = floatingLegendDiv.append("svg")
+            .attr("width", 220)
+            .attr("height", 420);
+
+        var floatingLegend = floatingLegendSvg.append("g");
+
+        // Add semi-transparent background
+        floatingLegend.append("rect")
+            .attr("class", "legend-bg")
+            .attr("width", 220)
+            .attr("height", 420)
+            .attr("rx", 10)
+            .style("fill", "rgba(10, 14, 39, 0.85)")
+            .style("stroke", "rgba(255, 215, 0, 0.2)")
+            .style("stroke-width", 1);
+
+        // Add title
+        floatingLegend.append("text")
+            .attr("class", "legend-title")
+            .attr("x", 110)
+            .attr("y", 25)
+            .text("Research Sectors")
+            .attr("text-anchor", "middle")
+            .style("font-weight", "bold")
+            .style("fill", "rgba(255, 215, 0, 0.9)")
+            .style("font-size", "14px");
+
+        // Add legend items
+        var legendItems = floatingLegend.selectAll(".legend-item")
+            .data(sectorColors)
+            .enter().append("g")
+            .attr("class", "legend-item")
+            .attr("transform", function (d, i) {
+                return "translate(15, " + (45 + i * 30) + ")";
+            })
+            .style("cursor", "pointer")
+            .on("mouseover", function (d) {
+                // Highlight on hover
+                d3.select(this).select("circle")
+                    .transition().duration(200)
+                    .attr("r", 10);
+                d3.select(this).select(".legend-label")
+                    .transition().duration(200)
+                    .style("fill", "white");
+            })
+            .on("mouseout", function (d) {
+                d3.select(this).select("circle")
+                    .transition().duration(200)
+                    .attr("r", 7);
+                d3.select(this).select(".legend-label")
+                    .transition().duration(200)
+                    .style("fill", "rgba(255, 255, 255, 0.8)");
+            })
+            .on("click", function (d) {
+                // Toggle sector visibility
+                var isActive = d3.select(this).classed("active");
+
+                // Reset all legend items
+                legendItems.classed("active", false);
+                legendItems.style("opacity", 1);
+
+                if (!isActive) {
+                    // Activate this item
+                    d3.select(this).classed("active", true);
+                    legendItems.style("opacity", function (item) {
+                        return item === d ? 1 : 0.3;
+                    });
+
+                    // Fade nodes
+                    node.style("opacity", function (n) {
+                        return (n.sector === d.label ||
+                            (d.label === "Unknown" && !n.sector)) ? 1 : 0.1;
+                    });
+
+                    // Fade links
+                    link.style("opacity", function (l) {
+                        return ((l.source.sector === d.label ||
+                            l.target.sector === d.label) ||
+                            (d.label === "Unknown" &&
+                                (!l.source.sector || !l.target.sector))) ? 0.3 : 0.02;
+                    });
+                } else {
+                    // Reset all
+                    node.style("opacity", 1);
+                    link.style("opacity", 0.3);
+                }
+            });
+
+        // Add colored circles
+        legendItems.append("circle")
+            .attr("r", 7)
+            .style("fill", function (d) { return d.color; })
+            .style("stroke", "rgba(255, 255, 255, 0.3)")
+            .style("stroke-width", 1);
+
+        // Add labels
+        legendItems.append("text")
+            .attr("class", "legend-label")
+            .attr("x", 20)
+            .attr("y", 4)
+            .text(function (d) { return d.label; })
+            .style("fill", "rgba(255, 255, 255, 0.8)")
+            .style("font-size", "11px");
+
+        // Add counts
+        legendItems.append("text")
+            .attr("class", "legend-count")
+            .attr("x", 195)
+            .attr("y", 4)
+            .attr("text-anchor", "end")
+            .text(function (d) { return d.count > 0 ? "(" + d.count + ")" : ""; })
+            .style("fill", "rgba(255, 255, 255, 0.5)")
+            .style("font-size", "10px");
+
+        // Create circular legend (initially hidden)
+        var circularLegend = svg.append("g")
+            .attr("class", "circular-legend")
+            .style("display", "none");
+
+        // Function to update circular legend
+        function updateCircularLegend() {
+            // Remove old circular legend items
+            circularLegend.selectAll("*").remove();
+
+            var centerX = width / 2;
+            var centerY = height / 2;
+            var legendRadius = Math.min(width, height) / 2.2;
+
+            // Match the same sector ordering as in circularLayout
+            var sectorOrder = ["Accessibility", "AI", "Anthropology", "Crime",
+                "Data Trust & Transparency", "Energy", "Healthcare",
+                "Interactions", "Networks/Graphs", "Qualitative Methods",
+                "VR/AR/Mixed Reality", "Unknown"];
+
+            // Filter to only sectors that have nodes and maintain order
+            var activeSectors = [];
+            sectorOrder.forEach(function (sectorName) {
+                var sectorData = sectorColors.find(function (d) {
+                    return d.label === sectorName;
+                });
+                if (sectorData && sectorData.count > 0) {
+                    activeSectors.push(sectorData);
+                }
+            });
+
+            // Calculate the angle for each sector to match circularLayout
+            var totalSectors = activeSectors.length;
+            var currentAngle = 0;
+
+            activeSectors.forEach(function (sector, sectorIndex) {
+                var sectorAngle = (2 * Math.PI) / totalSectors;
+                var startAngle = currentAngle;
+
+                // Calculate the middle angle of this sector's nodes
+                var middleAngle = startAngle + sectorAngle / 2;
+
+                var x = centerX + legendRadius * Math.cos(middleAngle);
+                var y = centerY + legendRadius * Math.sin(middleAngle);
+
+                var g = circularLegend.append("g")
+                    .attr("class", "circular-legend-item")
+                    .attr("transform", "translate(" + x + "," + y + ")")
+                    .style("cursor", "pointer")
+                    .on("mouseover", function () {
+                        // Scale up on hover
+                        d3.select(this).select("circle")
+                            .transition().duration(200)
+                            .attr("r", 10);
+                        d3.select(this).select("text")
+                            .transition().duration(200)
+                            .style("font-size", "12px")
+                            .style("opacity", 1);
+                    })
+                    .on("mouseout", function () {
+                        d3.select(this).select("circle")
+                            .transition().duration(200)
+                            .attr("r", 8);
+                        d3.select(this).select("text")
+                            .transition().duration(200)
+                            .style("font-size", "11px")
+                            .style("opacity", 0.9);
+                    })
+                    .on("click", function () {
+                        // Same click behavior as floating legend
+                        var isActive = d3.select(this).classed("active");
+
+                        circularLegend.selectAll(".circular-legend-item")
+                            .classed("active", false)
+                            .style("opacity", 1);
+
+                        if (!isActive) {
+                            d3.select(this).classed("active", true);
+                            circularLegend.selectAll(".circular-legend-item")
+                                .style("opacity", function () {
+                                    return d3.select(this).classed("active") ? 1 : 0.3;
+                                });
+
+                            node.style("opacity", function (n) {
+                                return (n.sector === sector.label ||
+                                    (sector.label === "Unknown" && !n.sector)) ? 1 : 0.1;
+                            });
+
+                            link.style("opacity", function (l) {
+                                return ((l.source.sector === sector.label ||
+                                    l.target.sector === sector.label) ||
+                                    (sector.label === "Unknown" &&
+                                        (!l.source.sector || !l.target.sector))) ? 0.3 : 0.02;
+                            });
+                        } else {
+                            node.style("opacity", 1);
+                            link.style("opacity", 0.3);
+                        }
+                    });
+
+                // Determine if label should be on left or right side
+                var isLeftSide = Math.cos(middleAngle) < -0.1;
+                var isRightSide = Math.cos(middleAngle) > 0.1;
+
+                // Add circle with glow effect
+                g.append("circle")
+                    .attr("r", 8)
+                    .style("fill", sector.color)
+                    .style("stroke", "rgba(255, 255, 255, 0.3)")
+                    .style("stroke-width", 1)
+                    .style("filter", "drop-shadow(0 0 4px " + sector.color + ")");
+
+                // Add label with color matching the nodes
+                var labelX = isLeftSide ? -15 : (isRightSide ? 15 : 0);
+                var anchor = isLeftSide ? "end" : (isRightSide ? "start" : "middle");
+
+                g.append("text")
+                    .attr("x", labelX)
+                    .attr("y", 4)
+                    .attr("text-anchor", anchor)
+                    .text(sector.label)
+                    .style("fill", sector.color)
+                    .style("font-size", "11px")
+                    .style("font-weight", "500")
+                    .style("opacity", 0.9)
+                    .style("text-shadow", "0 0 8px rgba(0, 0, 0, 0.8), 0 0 3px rgba(0, 0, 0, 0.9)");
+
+                currentAngle += sectorAngle;
+            });
+        }
+
+        // Update legend visibility based on layout
+
+        // Function to calculate circular layout positions
+        function circularLayout() {
+            var centerX = width / 2;
+            var centerY = height / 2;
+            var radius = Math.min(width, height) / 3;
+
+            // Group nodes by sector
+            var sectors = {};
+            data.nodes.forEach(function (d) {
+                var sector = d.sector || "Unknown";
+                if (!sectors[sector]) {
+                    sectors[sector] = [];
+                }
+                sectors[sector].push(d);
+            });
+
+            // Sort sectors to match legend order
+            var sectorOrder = ["Accessibility", "AI", "Anthropology", "Crime",
+                "Data Trust & Transparency", "Energy", "Healthcare",
+                "Interactions", "Networks/Graphs", "Qualitative Methods",
+                "VR/AR/Mixed Reality", "Unknown"];
+
+            var sortedSectors = [];
+            sectorOrder.forEach(function (sectorName) {
+                if (sectors[sectorName]) {
+                    sortedSectors.push({ name: sectorName, nodes: sectors[sectorName] });
+                }
+            });
+
+            // Calculate positions
+            var totalSectors = sortedSectors.length;
+            var currentAngle = 0;
+
+            sortedSectors.forEach(function (sector, sectorIndex) {
+                var sectorAngle = (2 * Math.PI) / totalSectors;
+                var startAngle = currentAngle;
+
+                // Position nodes within this sector
+                sector.nodes.forEach(function (d, nodeIndex) {
+                    var angle = startAngle + (sectorAngle * (nodeIndex + 1) / (sector.nodes.length + 1));
+                    d.circularX = centerX + radius * Math.cos(angle);
+                    d.circularY = centerY + radius * Math.sin(angle);
+                });
+
+                currentAngle += sectorAngle;
+            });
+        }
+
+        // Function to calculate hierarchical layout positions
+        function hierarchicalLayout() {
+            // Group by supervisor
+            var supervisorGroups = {};
+            data.nodes.forEach(function (d) {
+                var supervisor = d.main_supervisor;
+                if (!supervisorGroups[supervisor]) {
+                    supervisorGroups[supervisor] = [];
+                }
+                supervisorGroups[supervisor].push(d);
+            });
+
+            // Sort each group by year
+            Object.keys(supervisorGroups).forEach(function (supervisor) {
+                supervisorGroups[supervisor].sort(function (a, b) {
+                    return a.study_year - b.study_year;
+                });
+            });
+
+            var supervisorList = Object.keys(supervisorGroups);
+            var levelHeight = height / 7; // Space for supervisor + 5 years
+            var branchWidth = width / (supervisorList.length + 1);
+
+            // Create supervisor nodes
+            data.supervisorNodes = [];
+            data.supervisorLinks = [];
+
+            supervisorList.forEach(function (supervisor, supervisorIndex) {
+                var x = branchWidth * (supervisorIndex + 1);
+
+                // Create a supervisor node
+                var supervisorNode = {
+                    student_name: supervisor + " (Supervisor)",
+                    isSupervisor: true,
+                    hierarchicalX: x,
+                    hierarchicalY: 100,
+                    d_colour: "#FFD700", // Gold color for supervisors
+                    study_year: 0
+                };
+                data.supervisorNodes.push(supervisorNode);
+
+                // Position student nodes
+                supervisorGroups[supervisor].forEach(function (d, nodeIndex) {
+                    var studentsInYear = supervisorGroups[supervisor].filter(function (s) {
+                        return s.study_year === d.study_year;
+                    });
+                    var indexInYear = studentsInYear.indexOf(d);
+
+                    d.hierarchicalX = x + (indexInYear - studentsInYear.length / 2) * 35;
+                    d.hierarchicalY = 200 + (d.study_year - 1) * levelHeight;
+
+                    // Create link from supervisor to student
+                    data.supervisorLinks.push({
+                        source: supervisorNode,
+                        target: d,
+                        isSupervisorLink: true
+                    });
+                });
+            });
+        }
+
+        // Calculate all layout positions
+        circularLayout();
+        hierarchicalLayout();
+
+        // Layout switching functions
+        function setActiveButton(buttonId) {
+            d3.selectAll(".controls button").classed("active", false);
+            d3.select("#" + buttonId).classed("active", true);
+        }
+
+        // Switch to force layout
+        function forceLayout() {
+            previousLayout = currentLayout;
+            currentLayout = "force";
+            setActiveButton("forceBtn");
+
+            // Show floating legend, hide circular
+            floatingLegendDiv.style("display", "block");
+            circularLegend.style("display", "none");
+
+            // Remove any labels and supervisor elements
+            svg.selectAll(".label").remove();
+            svg.selectAll(".supervisor-node").remove();
+            svg.selectAll(".supervisor-link").remove();
+            svg.selectAll(".supervisor-label").remove();
+
+            // Set initial positions for force simulation based on previous layout
+            data.nodes.forEach(function (d) {
+                // Use current position from whatever layout we're coming from
+                if (previousLayout === "circular" && d.circularX !== undefined) {
+                    d.x = d.circularX;
+                    d.y = d.circularY;
+                } else if (previousLayout === "hierarchical" && d.hierarchicalX !== undefined) {
+                    d.x = d.hierarchicalX;
+                    d.y = d.hierarchicalY;
+                }
+            });
+
+            // Restart force simulation with lower alpha for smoother transition
+            simulation.nodes(data.nodes);
+            simulation.alpha(0.3).restart();
+        }
+
+        // Switch to circular layout
+        function switchToCircular() {
+            previousLayout = currentLayout;
+            currentLayout = "circular";
+            setActiveButton("circularBtn");
+
+            // Hide floating legend, show circular
+            floatingLegendDiv.style("display", "none");
+            updateCircularLegend();
+            circularLegend.style("display", "block");
+
+            // Remove any labels and supervisor elements
+            svg.selectAll(".label").remove();
+            svg.selectAll(".supervisor-node").remove();
+            svg.selectAll(".supervisor-link").remove();
+            svg.selectAll(".supervisor-label").remove();
+
+            // Stop force simulation
+            simulation.stop();
+
+            // Store starting positions
+            data.nodes.forEach(function (d) {
+                d.startX = d.x || d.hierarchicalX || d.circularX || width / 2;
+                d.startY = d.y || d.hierarchicalY || d.circularY || height / 2;
+            });
+
+            // Animate nodes and links together
+            var t = d3.timer(function (elapsed) {
+                var duration = 1000;
+                var progress = Math.min(elapsed / duration, 1);
+
+                // Update node positions
+                node.attr("cx", function (d) {
+                    var x = d.startX + (d.circularX - d.startX) * progress;
+                    d.tempX = x; // Store for link calculation
+                    return x;
+                })
+                    .attr("cy", function (d) {
+                        var y = d.startY + (d.circularY - d.startY) * progress;
+                        d.tempY = y; // Store for link calculation
+                        return y;
+                    });
+
+                // Update links to follow nodes
+                link.attr("d", function (d) {
+                    var sx = d.source.tempX || d.source.startX;
+                    var sy = d.source.tempY || d.source.startY;
+                    var tx = d.target.tempX || d.target.startX;
+                    var ty = d.target.tempY || d.target.startY;
+                    return "M" + sx + "," + sy + "L" + tx + "," + ty;
+                });
+
+                if (progress === 1) {
+                    t.stop();
+                    // Update final positions
+                    data.nodes.forEach(function (d) {
+                        d.x = d.circularX;
+                        d.y = d.circularY;
+                    });
+                }
+            });
+        }
+
+        // Switch to hierarchical layout
+        function switchToHierarchical() {
+            previousLayout = currentLayout;
+            currentLayout = "hierarchical";
+            setActiveButton("hierarchicalBtn");
+
+            // Show floating legend, hide circular
+            floatingLegendDiv.style("display", "block");
+            circularLegend.style("display", "none");
+
+            // Stop force simulation
+            simulation.stop();
+
+            // Remove old labels
+            svg.selectAll(".label").remove();
+
+            // Store starting positions
+            data.nodes.forEach(function (d) {
+                d.startX = d.x || d.circularX || d.hierarchicalX || width / 2;
+                d.startY = d.y || d.circularY || d.hierarchicalY || height / 2;
+            });
+
+            // Add supervisor nodes at center (they'll transition to position)
+            var supervisorNodes = svg.selectAll(".supervisor-node")
+                .data(data.supervisorNodes);
+
+            var newSupervisors = supervisorNodes.enter()
+                .append("circle")
+                .attr("class", "supervisor-node")
+                .attr("r", 0)
+                .attr("cx", width / 2)
+                .attr("cy", height / 2)
+                .on("mouseover", function (d) {
+                    tooltip.transition()
+                        .duration('50')
+                        .style("opacity", 1);
+                    var supervisorName = d.student_name.replace(" (Supervisor)", "");
+                    var studentCount = data.nodes.filter(function (n) {
+                        return n.main_supervisor === supervisorName;
+                    }).length;
+                    tooltip.html("<div style='font-weight: bold; margin-bottom: 8px; color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 5px;'>" +
+                        supervisorName + "</div>" +
+                        "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Role:</span> Supervisor</div>" +
+                        "<div style='margin: 4px 0;'><span style='font-weight: 600; color: #555;'>Students:</span> " + studentCount + "</div>")
+                        .style("left", (d3.event.pageX + 15) + "px")
+                        .style("top", (d3.event.pageY - 15) + "px");
+                })
+                .on("mouseout", function () {
+                    tooltip.transition()
+                        .duration('50')
+                        .style("opacity", 0);
+                });
+
+            // Add supervisor paths
+            var supervisorPaths = svg.selectAll(".supervisor-link")
+                .data(data.supervisorLinks);
+
+            supervisorPaths.enter()
+                .insert("path", ":first-child")
+                .attr("class", "supervisor-link");
+
+            // Add supervisor labels
+            svg.selectAll(".supervisor-label")
+                .data(data.supervisorNodes)
+                .enter()
+                .append("text")
+                .attr("class", "label supervisor-label")
+                .attr("x", function (d) { return d.hierarchicalX; })
+                .attr("y", function (d) { return d.hierarchicalY - 25; })
+                .attr("text-anchor", "middle")
+                .style("opacity", 0)
+                .text(function (d) { return d.student_name.replace(" (Supervisor)", ""); });
+
+            // Animate everything together
+            var t = d3.timer(function (elapsed) {
+                var duration = 1000;
+                var progress = Math.min(elapsed / duration, 1);
+
+                // Update supervisor nodes
+                newSupervisors
+                    .attr("r", 15 * progress)
+                    .attr("cx", function (d) {
+                        var x = width / 2 + (d.hierarchicalX - width / 2) * progress;
+                        d.tempX = x;
+                        return x;
+                    })
+                    .attr("cy", function (d) {
+                        var y = height / 2 + (d.hierarchicalY - height / 2) * progress;
+                        d.tempY = y;
+                        return y;
+                    });
+
+                // Update student nodes
+                node.attr("cx", function (d) {
+                    var x = d.startX + (d.hierarchicalX - d.startX) * progress;
+                    d.tempX = x;
+                    return x;
+                })
+                    .attr("cy", function (d) {
+                        var y = d.startY + (d.hierarchicalY - d.startY) * progress;
+                        d.tempY = y;
+                        return y;
+                    });
+
+                // Update regular links
+                link.attr("d", function (d) {
+                    var sx = d.source.tempX || d.source.startX;
+                    var sy = d.source.tempY || d.source.startY;
+                    var tx = d.target.tempX || d.target.startX;
+                    var ty = d.target.tempY || d.target.startY;
+
+                    // Add soft organic curves as we get closer to final position
+                    if (currentLayout === "hierarchical" && progress > 0.3) {
+                        var curveFactor = Math.min((progress - 0.3) / 0.7, 1);
+                        var dx = tx - sx;
+                        var dy = ty - sy;
+
+                        // Always create curves, even for straight lines
+                        // Add some randomness based on node positions for organic feel
+                        var uniqueOffset = ((d.source.hierarchicalX + d.target.hierarchicalY) % 100) / 100 - 0.5;
+
+                        // For vertical connections (north-south)
+                        if (Math.abs(dx) < 10) {
+                            // Add horizontal waviness to vertical lines
+                            var waveAmount = 30 * curveFactor;
+                            var cp1x = sx + waveAmount * (1 + uniqueOffset * 0.5);
+                            var cp1y = sy + dy * 0.3;
+                            var cp2x = tx - waveAmount * (1 - uniqueOffset * 0.5);
+                            var cp2y = ty - dy * 0.3;
+
+                            return "M" + sx + "," + sy +
+                                "C" + cp1x + "," + cp1y + " " +
+                                cp2x + "," + cp2y + " " +
+                                tx + "," + ty;
+                        }
+                        // For horizontal connections (east-west)
+                        else if (Math.abs(dy) < 10) {
+                            // Add vertical waviness to horizontal lines
+                            var waveAmount = 25 * curveFactor;
+                            var cp1x = sx + dx * 0.3;
+                            var cp1y = sy + waveAmount * (1 + uniqueOffset * 0.5);
+                            var cp2x = tx - dx * 0.3;
+                            var cp2y = ty - waveAmount * (1 - uniqueOffset * 0.5);
+
+                            return "M" + sx + "," + sy +
+                                "C" + cp1x + "," + cp1y + " " +
+                                cp2x + "," + cp2y + " " +
+                                tx + "," + ty;
+                        }
+                        // For diagonal connections
+                        else {
+                            // Create S-curve with offset based on direction
+                            var offset = Math.min(Math.abs(dx), Math.abs(dy)) * 0.3 * curveFactor;
+
+                            // For vertical-dominant connections
+                            if (Math.abs(dy) > Math.abs(dx)) {
+                                var cp1x = sx + (dx * 0.2) + (offset * (1 + uniqueOffset));
+                                var cp1y = sy + dy * 0.3;
+                                var cp2x = tx - (dx * 0.2) - (offset * (1 - uniqueOffset));
+                                var cp2y = ty - dy * 0.3;
+
+                                return "M" + sx + "," + sy +
+                                    "C" + cp1x + "," + cp1y + " " +
+                                    cp2x + "," + cp2y + " " +
+                                    tx + "," + ty;
+                            } else {
+                                // For horizontal-dominant connections
+                                var cp1x = sx + dx * 0.3;
+                                var cp1y = sy + (dy * 0.2) + (offset * 0.5 * (1 + uniqueOffset));
+                                var cp2x = tx - dx * 0.3;
+                                var cp2y = ty - (dy * 0.2) - (offset * 0.5 * (1 - uniqueOffset));
+
+                                return "M" + sx + "," + sy +
+                                    "C" + cp1x + "," + cp1y + " " +
+                                    cp2x + "," + cp2y + " " +
+                                    tx + "," + ty;
+                            }
+                        }
+                    }
+                    return "M" + sx + "," + sy + "L" + tx + "," + ty;
+                });
+
+                // Update supervisor links with organic curves
+                svg.selectAll(".supervisor-link")
+                    .style("stroke-opacity", 0.25 * progress)
+                    .attr("d", function (linkData) {
+                        var supervisor = linkData.source;
+                        var sx = supervisor.tempX || width / 2;
+                        var sy = supervisor.tempY || height / 2;
+
+                        var student = linkData.target;
+                        var tx = student.tempX || student.startX;
+                        var ty = student.tempY || student.startY;
+
+                        // Add soft organic curve effect
+                        if (progress > 0.3) {
+                            var curveFactor = Math.min((progress - 0.3) / 0.7, 1);
+                            var dx = tx - sx;
+                            var dy = ty - sy;
+
+                            // Add variation based on student position for organic feel
+                            var uniqueOffset = ((student.hierarchicalX + student.hierarchicalY) % 100) / 100 - 0.5;
+
+                            // Always create curves, even for perfectly vertical lines
+                            if (Math.abs(dx) < 10) {
+                                // Perfectly vertical - add horizontal wave
+                                var waveAmount = 35 * curveFactor;
+                                var cp1x = sx + waveAmount * (1 + uniqueOffset * 0.3);
+                                var cp1y = sy + dy * 0.35;
+                                var cp2x = tx - waveAmount * (1 - uniqueOffset * 0.3);
+                                var cp2y = ty - dy * 0.35;
+                            } else {
+                                // Diagonal supervisor links
+                                var spread = Math.abs(dx) * 0.4 * curveFactor;
+                                var cp1x = sx + (dx * 0.15) + spread * 0.3;
+                                var cp1y = sy + dy * 0.35;
+                                var cp2x = tx - (dx * 0.15) - spread * 0.3;
+                                var cp2y = ty - dy * 0.35;
+                            }
+
+                            return "M" + sx + "," + sy +
+                                "C" + cp1x + "," + cp1y + " " +
+                                cp2x + "," + cp2y + " " +
+                                tx + "," + ty;
+                        }
+                        return "M" + sx + "," + sy + "L" + tx + "," + ty;
+                    });
+
+                // Fade in labels
+                if (progress > 0.5) {
+                    svg.selectAll(".supervisor-label")
+                        .style("opacity", (progress - 0.5) * 2);
+                }
+
+                if (progress === 1) {
+                    t.stop();
+                    // Update final positions
+                    data.nodes.forEach(function (d) {
+                        d.x = d.hierarchicalX;
+                        d.y = d.hierarchicalY;
+                    });
+                }
+            });
+        }
+
+        // Button event listeners
+        d3.select("#forceBtn").on("click", forceLayout);
+        d3.select("#circularBtn").on("click", switchToCircular);
+        d3.select("#hierarchicalBtn").on("click", switchToHierarchical);
+    });
 
 </script>
